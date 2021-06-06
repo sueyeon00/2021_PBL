@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {            //구조체정의
+    struct Node* next;
+    struct Node* prev;
+    int data;
+}; 
+
+struct Node* head = NULL;
+struct Node* tail = NULL;
+
+struct Node* makenode(int data)
+{
+    struct Node* new = malloc(sizeof(struct Node));   //동적할당
+    new->next = NULL;
+    new->prev = NULL;
+    new->data = data;
+    return new;
+}
+
+void addnode(int data)
+{
+    struct Node* temp = head;
+    struct Node* newnode = makenode(data);
+
+    if (head == NULL) {
+        head = newnode;
+        tail = head;
+    }
+    else {
+        temp = tail;           //temp는 tail과 prevNew를 이어주는 도구
+        temp->next = newnode;
+        newnode->prev = temp;
+        tail = newnode;
+    }
+}
+
+void RemoveSomething(struct Node* head, int N, int K)
+{
+    struct Node* tmp = head->prev;//꼬리 노드 저장
+    int c = 0;
+    int t = 0;
+    printf("<");
+    while (c < N) {
+        t = K;               
+        while (t--) tmp = tmp->next;  //K번 -- 해줌 
+        printf(c++ ? ", %d" : "%d", tmp->data);
+
+        //노드 삭제 알고리즘
+        tmp->next->prev = tmp->prev;
+        tmp->prev->next = tmp->next;
+    }
+    printf(">");
+}
+
+int main() {
+
+    int N;
+    int K;
+
+    printf(" (N, K) : ");
+    scanf_s("%d %d", &N, &K);
+    for (int i = 1; i <= N; i++)
+    {
+        addnode(i);
+    }                            //원형연결리스트로 만들기
+
+    head->prev = tail;
+    tail->next = head;
+
+    RemoveSomething(head, N, K); //k값이 그 밖의 숫자인 경우 특정노드 삭제로 간다
+    return 0;
+}
