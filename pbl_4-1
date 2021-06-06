@@ -1,0 +1,86 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct TreeNode {
+    char data;    //루트
+    struct TreeNode* left;
+    struct TreeNode* right;
+}node;
+
+//노드생성 함수
+node* Create(char x) {
+    node* newNode = (node*)malloc(sizeof(node));
+
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->data = x;
+
+    return newNode;
+}
+
+//중위 순회
+inorder(node* root) {
+    if (root) {
+        inorder(root->left);      //왼쪽서브트리 순회
+        printf("%d", root->data); //노드 방문
+        inorder(root->right);     //오른쪽서브트리 순회
+    }
+}
+//전위 순회
+preorder(node* root) {
+    if (root) {
+        printf("%d", root->data);//노드 방문
+        preorder(root->left);    //왼쪽서브트리 순회
+        preorder(root->right);   //오른쪽서브트리 순회
+    }
+}
+//후위 순회
+postorder(node* root) {
+    if (root) {
+        postorder(root->left);   //왼쪽서브트리 순회
+        postorder(root->right);  //오른쪽서브트리 순회
+        printf("%d", root->data);//노드 방문
+    }
+}
+int main() {
+    node* root[27]; 
+    int n;   //노드 개수 -> 입력받음
+    char a, b, c, arr[81][2];
+
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        scanf(" %c %c %c", &a, &b, &c);     //노드의 자식 노드를 입력받아 arr배열에 저장
+        arr[i][0] = b;    arr[i][1] = c;
+        //n개의 노드 각각 생성
+        root[i] = Create(a);
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (arr[i][0] == root[j]->data)
+                root[i]->left = root[j];
+            if (arr[i][1] == root[j]->data)
+                root[i]->right = root[j];
+        }
+    }
+    //arr배열의 0번째 열에 저장된 값은 노드의 왼쪽 자식 노드가 된다.
+    //배열에 저장된 값과 노드의 데이터(root->data)가 같을 때 그 노드를 왼쪽 자식노드로 저장 
+    //arr배열의 1번째 열에 저장된 값은 노드의 오른쪽 자식 노드가 된다.
+    //배열에 저장된 값과 노드의 데이터(root->data)가 같을 때 그 노드를 오른쪽 자식노드로 저장 
+
+    printf("중위순회 = ");
+    inorder(root);
+    printf("\n");
+
+    printf("전위 순회 = ");
+    preorder(root);
+    printf("\n");
+
+    printf("후위 순회 = ");
+    postorder(root);
+    printf("\n");
+
+    return 0;
+}
