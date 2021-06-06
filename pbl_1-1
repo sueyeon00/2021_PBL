@@ -1,0 +1,87 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+//알고리즘//
+//항목이 피연산자이면 push
+//항목이 연산자이면 연산자가 계산할 수 있는만큼 꺼낸다. 2개
+//second 와 first 를 연산자로 계산한 뒤
+//결과값을 다시 push
+//최종 결과값은 pop
+
+#define MAX_STACK_SIZE 100
+typedef char element;
+typedef struct {
+	element data[MAX_STACK_SIZE];
+	int top;
+}StackType;
+
+
+//스택 초기화 함수
+void init_stack(StackType* s) {
+	s->top = -1;
+}
+//공백 상태 검출 함수
+int is_empty(StackType* s) {
+	return (s->top == -1);
+}
+//포화 상태 검출 함수
+int is_full(StackType* s) {
+	return(s->top == (MAX_STACK_SIZE - 1));
+}
+//삽입함수
+void push(StackType* s, element item) {
+	if (is_full(s)) {
+		printf("스택포화에러\n");
+		return;
+	}
+	else s->data[++(s->top)] = item;
+}
+//삭제함수
+element pop(StackType* s) {
+	if (is_empty(s)) {
+		printf("스택공백에러\n");
+		exit(1);
+	}
+	else return s->data[(s->top)--];
+}
+
+
+
+//프로그램 4.3에서 스택 코드 추가 끝
+
+//call by value(값) , call by reference (주소) 를 받는다
+//후위 표기 수식 계산 함수 
+int eval(char exp[]) {     // (call by reference) char exp[] == char *exp
+//char exp[] => exp라는 이름으로 1차원 배열을 받을 것이다.(배열이름은 주소)
+	int op1, op2, value, i = 0;
+	int len = strlen(exp);
+	char ch;
+	StackType s;
+	init_stack(&s);   //stack 초기화
+	for (i = 0; i < len; i++) {  //글자의 길이만큼 하나하나 
+		ch = exp[i];     
+		if (ch != '+' && ch != '-' && ch != '*' && ch != '/') {//입력이 피연산자이면 
+			value = ch - '0';  //ch가 아스키코드니까 숫자로 바꾸려고 하는 것 
+			push(&s, value);  //값을 집어넣는다
+		}
+		else {   //연산자이면 피연산자를 스택에서 제거
+			op2 = pop(&s);  //2개 가져오고 
+			op1 = pop(&s);
+			switch (ch) {  //연산을 수행하고 스택에 저장
+			case '+': push(&s, op1 + op2); break;  //계산된 결과는 push
+			case '-': push(&s, op1 - op2); break;
+			case '*': push(&s, op1 * op2); break;
+			case '/': push(&s, op1 / op2); break;
+			}
+		}
+	}
+	return pop(&s);   //최종결과 return
+}
+
+int main(void) {
+	int result;
+	printf("후위표기식은 82/3-32*+\n");
+	result = eval("82/3-32*+"); //문자열
+	printf("결과값은 %d\n", result);     //결과값은 7
+	return 0; 
+}
