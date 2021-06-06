@@ -1,0 +1,85 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX_QUEUE_SIZE 100
+
+typedef int element;
+typedef struct {
+	int front;
+	int rear;
+	element data[MAX_QUEUE_SIZE];
+}QueueType;                          //큐 구조체 만들기
+
+//오류함수
+void error(char* message) {
+	fprintf(stderr, "%s\n", message);
+	exit(1);
+}
+void init_queue(QueueType* q) {
+	q->rear = -1;
+	q->front = -1;
+}
+void queue_print(QueueType* q) {
+	for (int i = 0; i < MAX_QUEUE_SIZE; i++) {
+		if (i <= q->front || i > q->rear)
+			printf("  | ");
+		else
+			printf("%d |", q->data[i]);
+	}
+	printf("\n");
+}
+int is_full(QueueType* q) {
+	if (q->rear == MAX_QUEUE_SIZE - 1)
+		return 1;
+	else
+		return 0;
+}
+int is_empty(QueueType* q) {
+	if (q->front == q->rear)        //front 와 rear 값이 같으면 비어있다
+		return 1;
+	else
+		return 0;
+}
+void enqueue(QueueType* q, int item) {
+	if (is_full(q)) {
+		error("큐가 포화상태입니다.");
+		return;
+	}
+	q->data[++(q->rear)] = item;       //[++(q->rear)]  rear + 1  rear값 증가
+}
+int dequeue(QueueType* q) {
+	if (is_empty(q)) {
+		error("큐가 공백상태입니다.");
+		return -1;
+	}
+	int item = q->data[++(q->front)];  //front에 + 1
+	return item;
+}
+int queue_size(QueueType* q) {
+
+	return (q->rear - q->front);
+
+}
+
+int main(void) {
+
+	QueueType q;
+	int N;
+	init_queue(&q);
+
+	printf("N값을 입력하시오.");
+	scanf_s("%d \n", &N);
+	for (int i = 1; i < N + 1; i++) {
+		enqueue(&q, i);
+	}
+
+	while (queue_size(&q) > 1) { //카드가 1개 남을 때까지 
+		dequeue(&q);             //삭제하고 
+		int temp = dequeue(&q);  //밑으로 보내고 
+		enqueue(&q, temp);
+	}
+	printf("출력값\n");
+	printf("%d ", dequeue(&q));  //마지막 남은 카드 출력
+
+	return 0;
+}
