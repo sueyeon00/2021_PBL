@@ -1,0 +1,88 @@
+//오큰수란 현재 원소보다 큰 수 중 가장 왼쪽에 있는 원소를 의미한다.
+//스택을 활용해야함 스택은 후입선출
+
+//알고리즘 생각하기
+
+//<큰 수 중에 가장 왼쪽에 있는 것> 이 순서를 잘생각해야 함
+
+//왼쪽으로 하나씩 비교해주면서 큰 것이 있다면 그것이 오큰수
+//수열이 있고 
+//스택이 비어있거나 원소의 값 > 비교할 수 (왼쪽 수) 이라면 스택에 push해줌  (비교할때 peek 사용)
+//현재원소의 값 < 비교할 수 (왼쪽 수) 가 될 때 스택에 값을 pop하여 해당 인덱스 값을 비교하는 수로 초기화시킴
+
+#include<stdio.h>
+#include<stdlib.h>
+
+
+#define MAX_STACK_SIZE 100
+typedef int element;
+typedef struct {
+	element data[MAX_STACK_SIZE];
+	int top;        //top을 구조체 안에 넣음 
+}StackType;
+//.....구조체 안에 <stack과 top> 세트 개념 하나의 stack에는 top이 무조건 있음
+//스택 초기화 함수
+void init_stack(StackType* s) {
+	s->top = -1;
+}
+//공백 상태 검출 함수
+int is_empty(StackType* s) {      //구조체를 함수의 인자로 넘기고
+	return (s->top == -1);        // 간접멤버접근
+}
+//포화 상태 검출 함수
+int is_full(StackType* s) {
+	return(s->top == (MAX_STACK_SIZE - 1));
+}
+//삽입함수
+void push(StackType* s, element item) {
+	if (is_full(s)) {
+		printf("스택포화에러\n");
+		return;
+	}
+	else s->data[++(s->top)] = item;
+}
+//삭제함수
+element pop(StackType* s) {
+	if (is_empty(s)) {
+		printf("스택공백에러\n");
+		exit(1);
+	}
+	else return s->data[(s->top)--];
+}
+//peek구현
+element peek(StackType* s) {
+	if (is_empty(s)) {
+		fprintf(stderr, "스택 공백 에러\n");
+		exit(1);
+	}
+	else return s->data[s->top];
+}
+//스택 s -> 오큰수 저장
+int main(void) {
+	StackType s;
+	int input[100];
+
+    //수열 먼저 입력받기
+	printf("수열을 입력하시오 (숫자 5개)\n");
+	for (int i = 0; i < 5; i++) {
+		scanf_s("%d ", &input[i]);
+	}
+	for (int i = 0; i < 5; i++) {
+		while (!is_empty(&s) && peek(&s) <= input[i]) {
+             input[pop(&s)] = input[i];  //pop(&s) 는 인덱스
+		}
+		push(&s, i);
+	}
+	while (!is_empty(&s)) {
+		input[pop(&s)] = -1;
+	}
+
+	for (int i = 0; i < 5; i++) {
+		printf("%d -> ", input[i]);
+	}
+}
+
+//스택이 비어있지 않으면서(= top 이 - 1이 아닐 경우)
+// 현재 원소가 스택의 맨 위 원소가 가리키는 원소보다 큰 경우
+// 해당 조건을 만족할 때 까지 stack의 원소를 pop하면서
+// 해당 인덱스의 값을 현재 원소로 바꿔준다.
